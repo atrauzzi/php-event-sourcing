@@ -1,0 +1,17 @@
+{
+	"name": "atrauzzi/php-event-sourcing",
+	"description": "Simple, approachable event sourcing for PHP projects.",
+	"authors": [
+		{
+			"name": "Alexander Trauzzi",
+			"email": "atrauzzi@gmail.com"
+		}
+	],
+	"require": {
+	},
+	"autoload": {
+		"psr-4": {
+			"Atrauzzi\\GcdEventSourcing\\": "src/"
+		}
+	}
+}
