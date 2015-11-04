@@ -1,7 +1,5 @@
 <?php namespace Atrauzzi\PhpEventSourcing {
 
-	use Atrauzzi\PhpEventSourcing\Event;
-
 
 	abstract class AggregateRoot extends Entity {
 
@@ -16,6 +14,11 @@
 
 		/** @var string|int */
 		private $id;
+
+		/**
+		 * @return string
+		 */
+		public abstract function getType();
 
 		/**
 		 * @param \Atrauzzi\PhpEventSourcing\Event[] $events

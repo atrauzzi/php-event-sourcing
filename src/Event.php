@@ -4,9 +4,10 @@
 	interface Event {
 
 		/**
-		 * @return int|string
+		 * @param string $type
+		 * @param \Atrauzzi\PhpEventSourcing\AggregateRoot $aggregateRoot
 		 */
-		public function getId();
+		public function __construct($type, AggregateRoot $aggregateRoot);
 
 		/**
 		 * @return int|string
@@ -17,6 +18,16 @@
 		 * @return int|string
 		 */
 		public function getAggregateRootType();
+
+		/**
+		 * @return array
+		 */
+		public function getData();
+
+		/**
+		 * @param array $data
+		 */
+		public function setData(array $data);
 
 		/**
 		 * @return int

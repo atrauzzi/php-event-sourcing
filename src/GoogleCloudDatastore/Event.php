@@ -2,12 +2,14 @@
 
 	use GDS\Entity;
 	use Atrauzzi\PhpEventSourcing\Event as EventContract;
+	//
+	use Atrauzzi\PhpEventSourcing\AggregateRoot;
 
 
 	class Event extends Entity implements EventContract {
 
-		/** @var string|int */
-		private $id;
+		/** @var string */
+		private $type;
 
 		/** @var string|int */
 		private $aggregateRootId;
@@ -19,10 +21,13 @@
 		private $sequence;
 
 		/**
-		 * @return int|string
+		 * @param string $type
+		 * @param \Atrauzzi\PhpEventSourcing\AggregateRoot $aggregateRoot
 		 */
-		public function getId() {
-			return $this->id;
+		public function __construct($type, AggregateRoot $aggregateRoot) {
+			$this->type = $type;
+			$this->aggregateRootId = $aggregateRoot->getId();
+			$this->aggregateRootType = $aggregateRoot->getType();
 		}
 
 		/**
@@ -37,6 +42,20 @@
 		 */
 		public function getAggregateRootType() {
 			return $this->aggregateRootType;
+		}
+
+		/**
+		 * @return array
+		 */
+		public function getData() {
+			return $this->data;
+		}
+
+		/**
+		 * @param array $data
+		 */
+		public function setData(array $data) {
+			$this->data = $data;
 		}
 
 		/**

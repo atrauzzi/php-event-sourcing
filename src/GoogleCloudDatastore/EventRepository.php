@@ -28,12 +28,10 @@
 			$this->eventStore = new Store(
 				(new Schema('Event'))
 					->setEntityClass(Event::class)
-					// Note: Consider not indexing this.
-					->addString('type')
 					->addString('aggregate_type')
 					->addInteger('aggregate_id')
-					// Note: Consider not indexing this.
-					->addInteger('revision')
+					->addString('type', false)
+					->addInteger('sequence')
 					->addString('data', false)
 					->addDatetime('created')
 			);
@@ -92,7 +90,10 @@
 		 * @return \Atrauzzi\PhpEventSourcing\Event[]
 		 */
 		public function find($aggregateType, $aggregateId) {
-			// TODO: Implement find() method.
+			return $this->eventStore->fetchAll('SELECT * FROM Event WHERE aggregate_type = @aggregateType AND aggregate_id = @aggregateId ORDER BY sequence ASC', [
+				$aggregateType,
+				$aggregateId,
+			]);
 		}
 
 	}

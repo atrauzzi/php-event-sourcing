@@ -13,7 +13,6 @@
 		/** @var \Atrauzzi\PhpEventSourcing\AggregateRoot */
 		private $aggregateRoot;
 
-
 		/**
 		 * Events must originate from our root, so start from there.
 		 *
