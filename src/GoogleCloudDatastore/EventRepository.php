@@ -21,19 +21,19 @@
 
 			$this->sequenceStore = new Store(
 				(new Schema('EventSequence'))
-					->setEntityClass(EventSequence::class)
-					->addInteger('value')
+				->setEntityClass(EventSequence::class)
+				->addInteger('value')
 			);
 
 			$this->eventStore = new Store(
 				(new Schema('Event'))
-					->setEntityClass(Event::class)
-					->addString('aggregate_type')
-					->addInteger('aggregate_id')
-					->addString('type', false)
-					->addInteger('sequence')
-					->addString('data', false)
-					->addDatetime('created')
+				->setEntityClass(Event::class)
+				->addString('aggregate_type')
+				->addInteger('aggregate_id')
+				->addString('type', false)
+				->addInteger('sequence')
+				->addString('data', false)
+				->addDatetime('created')
 			);
 
 		}
@@ -47,7 +47,6 @@
 			/** @var \Atrauzzi\PhpEventSourcing\Event[] $events */
 			$events = (array)$events;
 
-			// We must insert every event individually.
 			foreach($events as $event) {
 
 				$this->eventStore->beginTransaction();
