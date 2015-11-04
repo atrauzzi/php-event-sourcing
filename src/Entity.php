@@ -1,4 +1,4 @@
-<?php namespace App\Domain\EventSource {
+<?php namespace Atrauzzi\PhpEventSourcing {
 
 	/**
 	 * Class Entity
@@ -10,14 +10,14 @@
 	 */
 	abstract class Entity {
 
-		/** @var \App\Domain\EventSource\AggregateRoot */
+		/** @var \Atrauzzi\PhpEventSourcing\AggregateRoot */
 		private $aggregateRoot;
 
 
 		/**
 		 * Events must originate from our root, so start from there.
 		 *
-		 * @param \App\Domain\EventSource\Event $event
+		 * @param \Atrauzzi\PhpEventSourcing\Event $event
 		 */
 		public function apply(Event $event) {
 			$this->aggregateRoot->apply($event);
@@ -27,7 +27,7 @@
 		 * By default an entity has no children.  Override this method in your subclass if an entity is
 		 * responsible for propagating events to its children.
 		 *
-		 * @return \App\Domain\EventSource\Entity[]
+		 * @return \Atrauzzi\PhpEventSourcing\Entity[]
 		 */
 		public function getChildEntities() {
 			return [];
@@ -37,7 +37,7 @@
 		//
 
 		/**
-		 * @param \App\Domain\EventSource\Event $event
+		 * @param \Atrauzzi\PhpEventSourcing\Event $event
 		 */
 		protected function handleRecursively(Event $event) {
 
@@ -49,7 +49,7 @@
 		}
 
 		/**
-		 * @param \App\Domain\EventSource\AggregateRoot $aggregateRoot
+		 * @param \Atrauzzi\PhpEventSourcing\AggregateRoot $aggregateRoot
 		 */
 		protected function setAggregateRoot(AggregateRoot $aggregateRoot) {
 
@@ -64,7 +64,7 @@
 		//
 
 		/**
-		 * @param \App\Domain\EventSource\Event $event
+		 * @param \Atrauzzi\PhpEventSourcing\Event $event
 		 */
 		private function handle(Event $event) {
 
@@ -76,7 +76,7 @@
 		}
 
 		/**
-		 * @param \App\Domain\EventSource\Event $event
+		 * @param \Atrauzzi\PhpEventSourcing\Event $event
 		 * @return string
 		 */
 		private function getApplyMethod(Event $event) {

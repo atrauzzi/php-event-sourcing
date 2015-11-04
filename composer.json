@@ -9,6 +9,9 @@
 	],
 	"require": {
 	},
+	"suggest": {
+		"tomwalder/php-gds": "Store data under google cloud datastore."
+	},
 	"autoload": {
 		"psr-4": {
 			"Atrauzzi\\GcdEventSourcing\\": "src/"

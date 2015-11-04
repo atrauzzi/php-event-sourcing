@@ -1,4 +1,4 @@
-<?php namespace App\Domain\Esgds {
+<?php namespace Atrauzzi\PhpEventSourcing {
 
 	use App\Domain\EventSource\Event;
 

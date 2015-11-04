@@ -1,10 +1,10 @@
-<?php namespace App\Domain\GoogleCloudDatastore {
+<?php namespace Atrauzzi\PhpEventSourcing\GoogleCloudDatastore {
 
 	use GDS\Entity;
-	use App\Domain\EventSource\Event as EventContract;
+	use Atrauzzi\PhpEventSourcing\Event as EventContract;
 
 
-	abstract class Event extends Entity implements EventContract {
+	class Event extends Entity implements EventContract {
 
 		/** @var string|int */
 		private $id;

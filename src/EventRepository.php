@@ -1,4 +1,4 @@
-<?php namespace App\Domain\EventSource {
+<?php namespace Atrauzzi\PhpEventSourcing {
 
 	/**
 	 * Interface EventRepository
@@ -11,16 +11,16 @@
 	interface EventRepository {
 
 		/**
-		 * @param \App\Domain\EventSource\Event[] $events
+		 * @param \Atrauzzi\PhpEventSourcing\Event[]|\Atrauzzi\PhpEventSourcing\Event $events
 		 */
-		public function save(array $events);
+		public function save($events);
 
 		/**
 		 * Filters allows parameters to the query to be leaky and helps keep the signature tame.
 		 *
 		 * @param string|int $id
 		 * @param array $filters
-		 * @return \App\Domain\EventSource\Event[]
+		 * @return \Atrauzzi\PhpEventSourcing\Event[]
 		 */
 		public function findByAggregateRootId($id, array $filters = []);
 

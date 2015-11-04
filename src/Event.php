@@ -1,4 +1,4 @@
-<?php namespace App\Domain\EventSource {
+<?php namespace Atrauzzi\PhpEventSourcing {
 
 
 	interface Event {
