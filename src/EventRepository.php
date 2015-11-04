@@ -12,17 +12,16 @@
 
 		/**
 		 * @param \Atrauzzi\PhpEventSourcing\Event[]|\Atrauzzi\PhpEventSourcing\Event $events
+		 * @throws \Atrauzzi\PhpEventSourcing\Exception\OptimisticConcurrency
 		 */
 		public function save($events);
 
 		/**
-		 * Filters allows parameters to the query to be leaky and helps keep the signature tame.
-		 *
-		 * @param string|int $id
-		 * @param array $filters
-		 * @return \Atrauzzi\PhpEventSourcing\Event[]
+		 * @param string $aggregateType
+		 * @param int|string $aggregateId
+		 * @return \Atrauzzi\PhpEventSourcing\Entity[]
 		 */
-		public function findByAggregateRootId($id, array $filters = []);
+		public function find($aggregateType, $aggregateId);
 
 	}
 

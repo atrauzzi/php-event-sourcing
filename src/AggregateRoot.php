@@ -1,6 +1,6 @@
 <?php namespace Atrauzzi\PhpEventSourcing {
 
-	use App\Domain\EventSource\Event;
+	use Atrauzzi\PhpEventSourcing\Event;
 
 
 	abstract class AggregateRoot extends Entity {
@@ -8,7 +8,7 @@
 		/** @var array */
 		private $events = [];
 
-		/** @var \App\Domain\EventSource\Event[] */
+		/** @var \Atrauzzi\PhpEventSourcing\Event[] */
 		private $uncommittedEvents = [];
 
 		/** @var int */
@@ -18,7 +18,7 @@
 		private $id;
 
 		/**
-		 * @param \App\Domain\EventSource\Event[] $events
+		 * @param \Atrauzzi\PhpEventSourcing\Event[] $events
 		 */
 		public function absorb(array $events) {
 			foreach($events as $event) {
@@ -28,7 +28,7 @@
 		}
 
 		/**
-		 * @param \App\Domain\EventSource\Event $event
+		 * @param \Atrauzzi\PhpEventSourcing\Event $event
 		 */
 		public function apply(Event $event) {
 			$this->handleRecursively($event);

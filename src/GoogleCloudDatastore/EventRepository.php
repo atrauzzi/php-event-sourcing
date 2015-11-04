@@ -1,9 +1,9 @@
 <?php namespace App\Domain\GoogleCloudDatastore {
 
-	use GDS\Store;
 	use Atrauzzi\PhpEventSourcing\EventRepository as EventRepositoryContract;
 	//
 	use GDS\Schema;
+	use GDS\Store;
 	use Atrauzzi\PhpEventSourcing\GoogleCloudDatastore\EventSequence;
 	use Atrauzzi\PhpEventSourcing\GoogleCloudDatastore\Event;
 	use Atrauzzi\PhpEventSourcing\Exception\OptimisticConcurrency as OptimisticConcurrencyException;
@@ -28,9 +28,11 @@
 			$this->eventStore = new Store(
 				(new Schema('Event'))
 					->setEntityClass(Event::class)
+					// Note: Consider not indexing this.
 					->addString('type')
 					->addString('aggregate_type')
 					->addInteger('aggregate_id')
+					// Note: Consider not indexing this.
 					->addInteger('revision')
 					->addString('data', false)
 					->addDatetime('created')
@@ -83,16 +85,16 @@
 
 		}
 
+
 		/**
-		 * Filters allows parameters to the query to be leaky and helps keep the signature tame.
-		 *
-		 * @param string|int $id
-		 * @param array $filters
+		 * @param string $aggregateType
+		 * @param int|string $aggregateId
 		 * @return \Atrauzzi\PhpEventSourcing\Event[]
 		 */
-		public function findByAggregateRootId($id, array $filters = []) {
-			// TODO: Implement findByAggregateRootId() method.
+		public function find($aggregateType, $aggregateId) {
+			// TODO: Implement find() method.
 		}
+
 	}
 
 }
