@@ -7,58 +7,25 @@
 
 	class Event extends Entity {
 
-		/** @var string */
-		private $type;
-
-		/** @var string|int */
-		private $aggregateRootId;
-
-		/** @var string|int */
-		private $aggregateRootType;
-
-		/** @var int */
-		private $sequence;
-
-		/**
-		 * @param string $type
-		 * @param \Atrauzzi\PhpEventSourcing\AggregateRoot $aggregateRoot
-		 */
-		public function __construct($type, AggregateRoot $aggregateRoot) {
-			$this->type = $type;
-			$this->aggregateRootId = $aggregateRoot->getId();
-			$this->aggregateRootType = $aggregateRoot->getType();
-		}
-
 		/**
 		 * @return int|string
 		 */
 		public function getAggregateRootId() {
-			return $this->aggregateRootId;
+			return $this->aggregate_root_id;
 		}
 
 		/**
 		 * @return int|string
 		 */
 		public function getAggregateRootType() {
-			return $this->aggregateRootType;
+			return $this->aggregate_root_type;
 		}
 
+		/**
+		 * @return null
+		 */
 		public function getPhpDiscriminator() {
-			return $this->discriminatorPhp;
-		}
-
-		/**
-		 * @return array
-		 */
-		public function getData() {
-			return $this->data;
-		}
-
-		/**
-		 * @param array $data
-		 */
-		public function setData(array $data) {
-			$this->data = $data;
+			return $this->discriminator_php;
 		}
 
 		/**
