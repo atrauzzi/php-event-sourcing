@@ -16,9 +16,13 @@
 		private $id;
 
 		/**
+		 * Feel free to override this if you want your type names to look different.
+		 *
 		 * @return string
 		 */
-		public abstract function getType();
+		public static function getType() {
+			return snake_case((new \ReflectionClass(self::class))->getShortName());
+		}
 
 		/**
 		 * @param \Atrauzzi\PhpEventSourcing\Event[] $events
@@ -40,7 +44,7 @@
 		}
 
 		/**
-		 * @return array
+		 * @return \Atrauzzi\PhpEventSourcing\Event[]
 		 */
 		public function getUncommittedEvents() {
 			return $this->uncommittedEvents;

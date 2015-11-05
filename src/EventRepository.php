@@ -11,17 +11,21 @@
 	interface EventRepository {
 
 		/**
-		 * @param \Atrauzzi\PhpEventSourcing\Event[]|\Atrauzzi\PhpEventSourcing\Event $events
+		 * Saves all uncommitted events to to the underlying storage driver.
+		 *
+		 * @param \Atrauzzi\PhpEventSourcing\AggregateRoot $aggregateRoot
 		 * @throws \Atrauzzi\PhpEventSourcing\Exception\OptimisticConcurrency
 		 */
-		public function save($events);
+		public function save(AggregateRoot $aggregateRoot);
 
 		/**
-		 * @param string $aggregateType
-		 * @param int|string $aggregateId
-		 * @return \Atrauzzi\PhpEventSourcing\Entity[]
+		 * Asks the underlying storage driver to reconstitute an aggregate root.
+		 *
+		 * @param string $phpDiscriminator
+		 * @param int|string $id
+		 * @return \Atrauzzi\PhpEventSourcing\AggregateRoot
 		 */
-		public function find($aggregateType, $aggregateId);
+		public function find($phpDiscriminator, $id);
 
 	}
 

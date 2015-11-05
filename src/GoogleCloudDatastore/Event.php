@@ -1,12 +1,11 @@
 <?php namespace Atrauzzi\PhpEventSourcing\GoogleCloudDatastore {
 
 	use GDS\Entity;
-	use Atrauzzi\PhpEventSourcing\Event as EventContract;
 	//
 	use Atrauzzi\PhpEventSourcing\AggregateRoot;
 
 
-	class Event extends Entity implements EventContract {
+	class Event extends Entity {
 
 		/** @var string */
 		private $type;
@@ -44,6 +43,10 @@
 			return $this->aggregateRootType;
 		}
 
+		public function getPhpDiscriminator() {
+			return $this->discriminatorPhp;
+		}
+
 		/**
 		 * @return array
 		 */
@@ -63,6 +66,27 @@
 		 */
 		public function getSequence() {
 			return $this->sequence;
+		}
+
+		/**
+		 * Returns all properties that belong to the event being persisted.
+		 *
+		 * @return array
+		 */
+		public function getEventData() {
+
+			$eventProperties = [];
+
+			foreach($this->getData() as $prefixedProperty => $value) {
+				if(
+					($property = preg_replace('/$event_/', '', $prefixedProperty))
+					!= $prefixedProperty
+				)
+					$eventProperties[$property] = '';
+			}
+
+			return $eventProperties;
+
 		}
 
 	}

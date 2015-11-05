@@ -1,5 +1,6 @@
 <?php namespace App\Domain\GoogleCloudDatastore {
 
+	use Atrauzzi\PhpEventSourcing\AggregateRoot;
 	use Atrauzzi\PhpEventSourcing\EventRepository as EventRepositoryContract;
 	//
 	use GDS\Schema;
@@ -28,32 +29,28 @@
 			$this->eventStore = new Store(
 				(new Schema('Event'))
 				->setEntityClass(Event::class)
-				->addString('aggregate_type')
-				->addInteger('aggregate_id')
+				->addDatetime('created')
 				->addString('type', false)
 				->addInteger('sequence')
-				->addString('data', false)
-				->addDatetime('created')
+				->addString('aggregate_type')
+				->addInteger('aggregate_id')
 			);
 
 		}
 
 		/**
-		 * @param \Atrauzzi\PhpEventSourcing\Event[]|\Atrauzzi\PhpEventSourcing\Event $events
+		 * @param \Atrauzzi\PhpEventSourcing\AggregateRoot $aggregateRoot
 		 * @throws \Atrauzzi\PhpEventSourcing\Exception\OptimisticConcurrency
 		 */
-		public function save($events) {
+		public function save(AggregateRoot $aggregateRoot) {
 
-			/** @var \Atrauzzi\PhpEventSourcing\Event[] $events */
-			$events = (array)$events;
-
-			foreach($events as $event) {
+			foreach($aggregateRoot->getUncommittedEvents() as $event) {
 
 				$this->eventStore->beginTransaction();
 
 				$sequenceKey = sprintf('%s%s',
-					$event->getAggregateRootType(),
-					$event->getAggregateRootId()
+					$aggregateRoot->getType(),
+					$aggregateRoot->getId()
 				);
 
 				/** @var \Atrauzzi\PhpEventSourcing\GoogleCloudDatastore\EventSequence|null $sequence */
@@ -62,12 +59,12 @@
 				if($sequence) {
 
 					$currentSequence = $sequence->getValue();
-					$expectedSequence = $event->getSequence();
+					$desiredSequence = $aggregateRoot->getLastSequence() + 1;
 
-					if($currentSequence >= $expectedSequence)
-						throw new OptimisticConcurrencyException($event, $currentSequence);
+					if($currentSequence >= $desiredSequence)
+						throw new OptimisticConcurrencyException($aggregateRoot, $event);
 
-					$sequence->setValue($expectedSequence);
+					$sequence->setValue($desiredSequence);
 
 				}
 				else {
@@ -76,7 +73,7 @@
 				}
 
 				$this->sequenceStore->upsert($sequence);
-				$this->eventStore->upsert($event);
+				$this->eventStore->upsert($this->createGdsEvent($aggregateRoot, $event));
 
 			}
 
@@ -84,15 +81,95 @@
 
 
 		/**
-		 * @param string $aggregateType
+		 * @param string|\Atrauzzi\PhpEventSourcing\AggregateRoot $aggregateType
 		 * @param int|string $aggregateId
-		 * @return \Atrauzzi\PhpEventSourcing\Event[]
+		 * @return \Atrauzzi\PhpEventSourcing\AggregateRoot
 		 */
 		public function find($aggregateType, $aggregateId) {
-			return $this->eventStore->fetchAll('SELECT * FROM Event WHERE aggregate_type = @aggregateType AND aggregate_id = @aggregateId ORDER BY sequence ASC', [
-				$aggregateType,
+
+			$gdsEvents = $this->eventStore->fetchAll('SELECT * FROM Event WHERE aggregate_type = @aggregateType AND aggregate_id = @aggregateId ORDER BY sequence ASC', [
+				$aggregateType::getType(),
 				$aggregateId,
 			]);
+
+			/** @var \Atrauzzi\PhpEventSourcing\AggregateRoot $aggregateRoot */
+			$aggregateRoot = new $aggregateType();
+			$aggregateRoot->absorb($this->hydrateEvents($gdsEvents));
+
+			return $aggregateRoot;
+
+		}
+
+		//
+		//
+
+		/**
+		 * Produces a persistable GDS entity based on an aggregate root and an event.
+		 *
+		 * @param \Atrauzzi\PhpEventSourcing\AggregateRoot $aggregateRoot
+		 * @param object $event
+		 * @return \Atrauzzi\PhpEventSourcing\GoogleCloudDatastore\Event
+		 */
+		protected function createGdsEvent(AggregateRoot $aggregateRoot, $event) {
+
+			$gdsEvent = $this->eventStore->createEntity([
+				'created' => new DateTime(),
+				'type' => $this->getType($event),
+				'sequence' => $aggregateRoot->getLastSequence() + 1,
+				'aggregate_type' => $aggregateRoot->getType(),
+				'aggregate_id' => $aggregateRoot->getId(),
+				'discriminator_php' => get_class($event),
+			]);
+
+			// Extract all the POPO event's public properties and prefix them with `event_`.
+			foreach(get_object_vars($event) as $property => $value) {
+				$eventProperty = 'event_' . snake_case($property);
+				$gdsEvent->$eventProperty = $value;
+			}
+
+			return $gdsEvent;
+
+		}
+
+		/**
+		 * Returns a short, platform agnostic handle for the event.
+		 *
+		 * @param object $event
+		 * @return string
+		 */
+		protected function getType($event) {
+
+			if(method_exists($event, 'getType'))
+				return $event->getType();
+
+			return snake_case((new \ReflectionClass($event))->getShortName());
+
+		}
+
+		/**
+		 * @param \Atrauzzi\PhpEventSourcing\GoogleCloudDatastore\Event[] $gdsEvents
+		 * @return object[]
+		 */
+		protected function hydrateEvents(array $gdsEvents) {
+
+			$events = [];
+
+			foreach($gdsEvents as $gdsEvent) {
+
+				$eventClass = $gdsEvent->getPhpDiscriminator();
+				$event = new $eventClass();
+
+				foreach($gdsEvent->getEventData() as $property => $value) {
+					$property = snake_case($property);
+					$event->$property = $value;
+				}
+
+				$events[] = $event;
+
+			}
+
+			return $events;
+
 		}
 
 	}

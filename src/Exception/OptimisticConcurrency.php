@@ -2,30 +2,31 @@
 
 	use \Exception;
 	//
-	use Atrauzzi\PhpEventSourcing\Event;
+	use Atrauzzi\PhpEventSourcing\AggregateRoot;
 
 
 	class OptimisticConcurrency extends Exception {
 
-		/** @var \Atrauzzi\PhpEventSourcing\Event */
+		/** @var \Atrauzzi\PhpEventSourcing\AggregateRoot */
+		protected $aggregateRoot;
+
+		/** @var object */
 		protected $event;
 
-		/** @var int */
-		protected $currentSequence;
-
 		/**
-		 * @param \Atrauzzi\PhpEventSourcing\Event $event
-		 * @param int $currentSequence
+		 * @param \Atrauzzi\PhpEventSourcing\AggregateRoot $aggregateRoot
+		 * @param object $event
 		 */
-		public function __construct(Event $event, $currentSequence) {
+		public function __construct(AggregateRoot $aggregateRoot, $event) {
+
+			$this->aggregateRoot = $aggregateRoot;
 
 			$this->event = $event;
-			$this->currentSequence = $currentSequence;
 
 			parent::__construct(sprintf('The data for `%s:%s` has changed, sequence at %s, expected %s.',
-				$event->getAggregateRootType(),
-				$event->getAggregateRootId(),
-				$currentSequence
+				$aggregateRoot->getType(),
+				$aggregateRoot->getId(),
+				$aggregateRoot->getLastSequence()
 			));
 
 		}
@@ -38,10 +39,10 @@
 		}
 
 		/**
-		 * @return int
+		 * @return \Atrauzzi\PhpEventSourcing\AggregateRoot
 		 */
-		public function getCurrentSequence() {
-			return $this->currentSequence;
+		public function getAggregateRoot() {
+			return $this->aggregateRoot;
 		}
 
 	}
