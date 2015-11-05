@@ -14,9 +14,6 @@
 	 */
 	class EventSequence extends Entity {
 
-		/** @var int */
-		protected $value;
-
 		/**
 		 * @return int
 		 */
