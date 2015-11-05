@@ -147,6 +147,10 @@
 		}
 
 		/**
+		 * Rebuilds events from GDS-backed event data.
+		 *
+		 * This method is heavy.
+		 *
 		 * @param \Atrauzzi\PhpEventSourcing\GoogleCloudDatastore\Event[] $gdsEvents
 		 * @return object[]
 		 */
@@ -156,13 +160,23 @@
 
 			foreach($gdsEvents as $gdsEvent) {
 
-				$eventClass = $gdsEvent->getPhpDiscriminator();
-				$event = new $eventClass();
+				$properties = [];
+				foreach($gdsEvent->getEventData() as $property => $value)
+					$properties[camel_case($property)] = $value;
 
-				foreach($gdsEvent->getEventData() as $property => $value) {
-					$property = snake_case($property);
-					$event->$property = $value;
-				}
+				$eventClass = $gdsEvent->getPhpDiscriminator();
+				$eventClassReflection = new \ReflectionClass($eventClass);
+				$eventClassConstructor = $eventClassReflection->getConstructor();
+
+				$constructorParameters = [];
+				foreach($eventClassConstructor->getParameters() as $parameter)
+					$constructorParameters[$parameter->getName()] = array_get($properties, $parameter->getName());
+
+				$event = $eventClassReflection->newInstanceArgs($constructorParameters);
+				$properties = array_forget($properties, $constructorParameters);
+
+				foreach($eventClassReflection->getProperties() as $property)
+					$property->setValue($event, array_get($properties, $property->getName()));
 
 				$events[] = $event;
 

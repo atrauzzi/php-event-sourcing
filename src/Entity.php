@@ -79,8 +79,7 @@
 		 * @return string
 		 */
 		private function getApplyMethod(Event $event) {
-			$classParts = explode('\\', get_class($event));
-			return 'apply' . end($classParts);
+			return 'apply' . (new \ReflectionClass(self::class))->getShortName();
 		}
 
 	}
