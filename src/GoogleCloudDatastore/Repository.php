@@ -1,7 +1,7 @@
-<?php namespace App\Domain\GoogleCloudDatastore {
+<?php namespace Atrauzzi\PhpEventSourcing\GoogleCloudDatastore {
 
 	use Atrauzzi\PhpEventSourcing\AggregateRoot;
-	use Atrauzzi\PhpEventSourcing\EventRepository as EventRepositoryContract;
+	use Atrauzzi\PhpEventSourcing\Repository as RepositoryContract;
 	//
 	use GDS\Schema;
 	use GDS\Store;
@@ -10,7 +10,7 @@
 	use Atrauzzi\PhpEventSourcing\Exception\OptimisticConcurrency as OptimisticConcurrencyException;
 
 
-	class EventRepository implements EventRepositoryContract {
+	class Repository implements RepositoryContract {
 
 		/** @var \GDS\Store */
 		protected $sequenceStore;
@@ -110,7 +110,7 @@
 		 * @param object $event
 		 * @return \Atrauzzi\PhpEventSourcing\GoogleCloudDatastore\Event
 		 */
-		protected function createGdsEvent(AggregateRoot $aggregateRoot, $event) {
+		private function createGdsEvent(AggregateRoot $aggregateRoot, $event) {
 
 			$gdsEvent = $this->eventStore->createEntity([
 				'created' => new DateTime(),
@@ -137,7 +137,7 @@
 		 * @param object $event
 		 * @return string
 		 */
-		protected function getType($event) {
+		private function getType($event) {
 
 			if(method_exists($event, 'getType'))
 				return $event->getType();
@@ -150,7 +150,7 @@
 		 * @param \Atrauzzi\PhpEventSourcing\GoogleCloudDatastore\Event[] $gdsEvents
 		 * @return object[]
 		 */
-		protected function hydrateEvents(array $gdsEvents) {
+		private function hydrateEvents(array $gdsEvents) {
 
 			$events = [];
 

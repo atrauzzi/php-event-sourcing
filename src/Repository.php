@@ -1,14 +1,14 @@
 <?php namespace Atrauzzi\PhpEventSourcing {
 
 	/**
-	 * Interface EventRepository
+	 * Interface Repository
 	 *
-	 * The base entity repository and its subclasses are going to expect to have
-	 * access to an implementation of this interface.
+	 * Aggregate Root repositories are going to expect to have access to an
+	 * implementation of this interface.
 	 *
 	 * @package App\Domain\EventSource
 	 */
-	interface EventRepository {
+	interface Repository {
 
 		/**
 		 * Saves all uncommitted events to to the underlying storage driver.
@@ -21,11 +21,11 @@
 		/**
 		 * Asks the underlying storage driver to reconstitute an aggregate root.
 		 *
-		 * @param string $phpDiscriminator
-		 * @param int|string $id
+		 * @param string|\Atrauzzi\PhpEventSourcing\AggregateRoot $aggregateType
+		 * @param int|string $aggregateId
 		 * @return \Atrauzzi\PhpEventSourcing\AggregateRoot
 		 */
-		public function find($phpDiscriminator, $id);
+		public function find($aggregateType, $aggregateId);
 
 	}
 
